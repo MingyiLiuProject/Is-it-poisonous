@@ -43,6 +43,36 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build | tee xcodebuild.log
 
+      - name: Validate catalog data
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          plants = json.loads(Path("YouDuMa/Resources/Data/aspca_plants_v1.json").read_text())
+          metadata = json.loads(Path("YouDuMa/Resources/Data/aspca_database_metadata.json").read_text())
+          assert len(plants) == metadata["plantCount"]
+          assert len({plant["id"] for plant in plants}) == len(plants)
+          assert all(
+              not set(plant["toxicTo"]) & set(plant["nonToxicTo"])
+              for plant in plants
+          )
+          assert len(plants) > 900
+          print(f"Validated {len(plants)} catalog records")
+          PY
+
+      - name: Compile unit tests
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project YouDuMa.xcodeproj \
+            -scheme YouDuMa \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build-for-testing | tee xctest-build.log
+
       - name: Package Appetize build
         run: |
           APP_PATH="build/Build/Products/Debug-iphonesimulator/YouDuMa.app"
@@ -62,6 +92,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: YouDuMa-xcodebuild-log
-          path: xcodebuild.log
+          path: |
+            xcodebuild.log
+            xctest-build.log
           if-no-files-found: ignore
           retention-days: 7
