@@ -43,6 +43,28 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build | tee xcodebuild.log
 
+      - name: Run unit tests
+        run: |
+          DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(
+              device["udid"]
+              for runtime in devices.values()
+              for device in runtime
+              if device["name"].startswith("iPhone")
+          ))
+          ')
+          set -o pipefail
+          xcodebuild \
+            -project YouDuMa.xcodeproj \
+            -scheme YouDuMa \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$DEVICE_ID" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            test | tee xctest.log
+
       - name: Package Appetize build
         run: |
           APP_PATH="build/Build/Products/Debug-iphonesimulator/YouDuMa.app"
@@ -62,6 +84,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: YouDuMa-xcodebuild-log
-          path: xcodebuild.log
+          path: |
+            xcodebuild.log
+            xctest.log
           if-no-files-found: ignore
           retention-days: 7
