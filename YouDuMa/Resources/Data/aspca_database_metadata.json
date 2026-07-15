@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "datasetVersion": "aspca-v1-2026-07-15",
+  "generatedAt": "2026-07-15T14:46:43+00:00",
+  "plantCount": 1023,
+  "sourceRowCounts": {
+    "dog": 985,
+    "cat": 983,
+    "horse": 795
+  },
+  "sources": {
+    "dog": "https://www.aspca.org/pet-care/animal-poison-control/dogs-plant-list",
+    "cat": "https://www.aspca.org/pet-care/animal-poison-control/cats-plant-list",
+    "horse": "https://www.aspca.org/pet-care/animal-poison-control/horse-plant-list"
+  },
+  "notes": [
+    "List-level factual fields only.",
+    "No ASPCA images are stored.",
+    "Clinical prose is maintained separately as reviewed editorial content."
+  ]
+}

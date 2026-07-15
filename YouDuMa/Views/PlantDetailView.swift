@@ -9,16 +9,24 @@ struct PlantDetailView: View {
             VStack(alignment: .leading, spacing: 22) {
                 header
                 toxicityOverview
-                informationCard(
-                    title: "毒性成分",
-                    systemImage: "aqi.medium",
-                    text: plant.toxicPrinciples
-                )
-                informationCard(
-                    title: "可能表现",
-                    systemImage: "waveform.path.ecg",
-                    text: plant.clinicalSigns
-                )
+                if plant.toxicPrinciples.isEmpty && plant.clinicalSigns.isEmpty {
+                    informationCard(
+                        title: "详细资料",
+                        systemImage: "doc.text.magnifyingglass",
+                        text: "数据库 v1 已收录毒性状态与植物分类信息。毒性成分和临床表现尚未完成中文专业审核，请通过页面底部的来源链接查看 ASPCA 详情。"
+                    )
+                } else {
+                    informationCard(
+                        title: "毒性成分",
+                        systemImage: "aqi.medium",
+                        text: plant.toxicPrinciples
+                    )
+                    informationCard(
+                        title: "可能表现",
+                        systemImage: "waveform.path.ecg",
+                        text: plant.clinicalSigns
+                    )
+                }
                 EmergencyCard()
                 source
             }
@@ -86,7 +94,7 @@ struct PlantDetailView: View {
                             .font(.title2)
                         Text(pet.title)
                             .font(.caption.weight(.semibold))
-                        Text(plant.isToxic(to: pet) ? "有毒" : "未列出")
+                        Text(statusTitle(for: pet))
                             .font(.caption2)
                             .foregroundStyle(plant.isToxic(to: pet) ? AppTheme.danger : .secondary)
                     }
@@ -105,6 +113,16 @@ struct PlantDetailView: View {
         }
         .padding(16)
         .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    private func statusTitle(for pet: PetType) -> String {
+        if plant.isToxic(to: pet) {
+            return "有毒"
+        }
+        if plant.isListedNonToxic(to: pet) {
+            return "列为无毒"
+        }
+        return "未列出"
     }
 
     private func informationCard(title: String, systemImage: String, text: String) -> some View {

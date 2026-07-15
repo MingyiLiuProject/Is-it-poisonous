@@ -36,12 +36,21 @@ struct PlantRow: View {
             Spacer(minLength: 6)
 
             VStack(alignment: .trailing, spacing: 7) {
-                Text(plant.toxicTo.map(\.emoji).sorted().joined())
-                    .font(.subheadline)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(AppTheme.danger.opacity(0.11), in: Capsule())
-                    .accessibilityLabel("有毒对象：\(plant.toxicTo.map(\.title).joined(separator: "、"))")
+                if plant.toxicTo.isEmpty {
+                    Text("未列有毒")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(AppTheme.forest)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(AppTheme.moss.opacity(0.14), in: Capsule())
+                } else {
+                    Text(plant.toxicTo.map(\.emoji).sorted().joined())
+                        .font(.subheadline)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(AppTheme.danger.opacity(0.11), in: Capsule())
+                        .accessibilityLabel("有毒对象：\(plant.toxicTo.map(\.title).joined(separator: "、"))")
+                }
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.tertiary)

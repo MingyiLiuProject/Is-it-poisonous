@@ -15,4 +15,9 @@ final class PlantSearchTests: XCTestCase {
         XCTAssertEqual(catResults.first?.id, "lily")
         XCTAssertTrue(dogResults.isEmpty)
     }
+
+    func testLoadsVersionedASPCAPlantCatalog() {
+        XCTAssertGreaterThan(PlantRepository.plants.count, 900)
+        XCTAssertTrue(PlantRepository.plants.contains { $0.nonToxicTo.isEmpty == false })
+    }
 }

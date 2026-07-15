@@ -1,7 +1,21 @@
 import Foundation
 
 enum PlantRepository {
-    static let plants: [Plant] = [
+    static let plants: [Plant] = {
+        var catalog = Dictionary(uniqueKeysWithValues: loadCatalog().map { ($0.id, $0) })
+        for reviewedPlant in reviewedPlants {
+            if let importedPlant = catalog[reviewedPlant.id] {
+                catalog[reviewedPlant.id] = reviewedPlant.withStatuses(from: importedPlant)
+            } else {
+                catalog[reviewedPlant.id] = reviewedPlant
+            }
+        }
+        return catalog.values.sorted {
+            $0.englishName.localizedCaseInsensitiveCompare($1.englishName) == .orderedAscending
+        }
+    }()
+
+    private static let reviewedPlants: [Plant] = [
         Plant(
             id: "lily",
             chineseName: "百合",
@@ -148,6 +162,30 @@ enum PlantRepository {
         )
     ]
 
+    private static func loadCatalog() -> [Plant] {
+        let catalogURL = Bundle.main.url(
+            forResource: "aspca_plants_v1",
+            withExtension: "json",
+            subdirectory: "Data"
+        ) ?? Bundle.main.url(
+            forResource: "aspca_plants_v1",
+            withExtension: "json"
+        )
+
+        guard let url = catalogURL else {
+            assertionFailure("Missing ASPCA plant catalog resource")
+            return []
+        }
+
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode([Plant].self, from: data)
+        } catch {
+            assertionFailure("Could not decode ASPCA plant catalog: \(error)")
+            return []
+        }
+    }
+
     static func search(_ query: String, pet: PetType? = nil) -> [Plant] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -156,5 +194,23 @@ enum PlantRepository {
             let matchesQuery = trimmed.isEmpty || plant.searchableText.localizedCaseInsensitiveContains(trimmed)
             return matchesPet && matchesQuery
         }
+    }
+}
+
+private extension Plant {
+    func withStatuses(from importedPlant: Plant) -> Plant {
+        Plant(
+            id: id,
+            chineseName: chineseName,
+            englishName: englishName,
+            scientificName: scientificName,
+            family: family,
+            aliases: Array(Set(aliases + importedPlant.aliases)).sorted(),
+            toxicTo: importedPlant.toxicTo,
+            nonToxicTo: importedPlant.nonToxicTo,
+            toxicPrinciples: toxicPrinciples,
+            clinicalSigns: clinicalSigns,
+            sourceURL: importedPlant.sourceURL
+        )
     }
 }

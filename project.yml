@@ -15,6 +15,10 @@ targets:
     platform: iOS
     sources:
       - path: YouDuMa
+        excludes:
+          - Resources
+    resources:
+      - path: YouDuMa/Resources
     info:
       path: YouDuMa/Info.plist
       properties:

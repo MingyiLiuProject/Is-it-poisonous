@@ -31,10 +31,10 @@ struct SafetyView: View {
 
                     Text("数据说明")
                         .font(.headline)
-                    Text("当前版本是产品原型，只内置少量常见植物。正式发布需要专业审核、更新日期、版本记录和可追溯的数据授权。")
+                    Text("数据库 v1 收录 ASPCA 猫、狗、马列表中的植物分类与毒性状态；临床描述仍在分批专业审核。")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Text("示例数据最近核对：2026-07-15")
+                    Text("数据库最近核对：2026-07-15")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
