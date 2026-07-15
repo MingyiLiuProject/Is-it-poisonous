@@ -68,6 +68,29 @@ open YouDuMa.xcodeproj
 
 在 Xcode 中选择 iPhone 模拟器并运行。首次真机运行时，需要在 **Signing & Capabilities** 中选择自己的开发团队。
 
+## 在 Windows 浏览器查看原生 App
+
+仓库内置 GitHub Actions 工作流，可以在 GitHub 的 macOS 环境中编译 iOS Simulator App，再交给 Appetize 在浏览器中运行。
+
+### 1. 云端编译
+
+1. 打开仓库的 [Actions 页面](https://github.com/MingyiLiuProject/Is-it-poisonous/actions/workflows/ios-browser-preview.yml)
+2. 选择 **Build iOS Browser Preview**
+3. 点击 **Run workflow**
+4. 等待 `Build simulator app` 完成
+5. 在运行结果底部下载 `YouDuMa-iOS-Simulator` artifact
+
+下载的 artifact 是 GitHub 生成的外层压缩包。解压一次后，会得到真正需要上传的 `YouDuMa-simulator.zip`；不要再次解压这个内层文件。
+
+### 2. 在浏览器运行
+
+1. 打开 [Appetize Upload](https://appetize.io/upload)
+2. 上传 `YouDuMa-simulator.zip`
+3. 平台选择 iOS
+4. 等待处理完成后打开 Appetize 提供的预览链接
+
+Appetize 是第三方云服务，免费额度、保存期限和公开分享能力以其当前套餐为准。此构建仅用于 iOS Simulator，不能直接安装到实体 iPhone。
+
 ## 数据与安全
 
 示例数据主要参考：
