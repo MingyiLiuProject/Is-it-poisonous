@@ -1,0 +1,67 @@
+name: Build iOS Browser Preview
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "agent/**"
+    paths:
+      - ".github/workflows/ios-browser-preview.yml"
+      - "YouDuMa/**"
+      - "YouDuMaTests/**"
+      - "project.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-simulator-app:
+    name: Build simulator app
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project YouDuMa.xcodeproj \
+            -scheme YouDuMa \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build | tee xcodebuild.log
+
+      - name: Package Appetize build
+        run: |
+          APP_PATH="build/Build/Products/Debug-iphonesimulator/YouDuMa.app"
+          test -d "$APP_PATH"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" YouDuMa-simulator.zip
+
+      - name: Upload simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: YouDuMa-iOS-Simulator
+          path: YouDuMa-simulator.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: YouDuMa-xcodebuild-log
+          path: xcodebuild.log
+          if-no-files-found: ignore
+          retention-days: 7
