@@ -61,6 +61,22 @@ jobs:
           print(f"Validated {len(plants)} catalog records")
           PY
 
+      - name: Verify catalog is bundled
+        run: |
+          APP_PATH="build/Build/Products/Debug-iphonesimulator/YouDuMa.app"
+          CATALOG_PATH=$(find "$APP_PATH" -name aspca_plants_v1.json -print -quit)
+          METADATA_PATH=$(find "$APP_PATH" -name aspca_database_metadata.json -print -quit)
+          test -n "$CATALOG_PATH"
+          test -n "$METADATA_PATH"
+          echo "Catalog: $CATALOG_PATH"
+          echo "Metadata: $METADATA_PATH"
+
+      - name: Package Appetize build
+        run: |
+          APP_PATH="build/Build/Products/Debug-iphonesimulator/YouDuMa.app"
+          test -d "$APP_PATH"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" YouDuMa-simulator.zip
+
       - name: Compile unit tests
         run: |
           set -o pipefail
@@ -69,15 +85,9 @@ jobs:
             -scheme YouDuMa \
             -configuration Debug \
             -destination "generic/platform=iOS Simulator" \
-            -derivedDataPath build \
+            -derivedDataPath build-tests \
             CODE_SIGNING_ALLOWED=NO \
             build-for-testing | tee xctest-build.log
-
-      - name: Package Appetize build
-        run: |
-          APP_PATH="build/Build/Products/Debug-iphonesimulator/YouDuMa.app"
-          test -d "$APP_PATH"
-          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" YouDuMa-simulator.zip
 
       - name: Upload simulator app
         uses: actions/upload-artifact@v4
