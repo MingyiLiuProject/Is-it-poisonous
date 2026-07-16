@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
-  "datasetVersion": "aspca-v1-2026-07-15",
-  "generatedAt": "2026-07-15T14:46:43+00:00",
+  "schemaVersion": 2,
+  "datasetVersion": "aspca-v2-multilingual-2026-07-16",
+  "generatedAt": "2026-07-16T09:42:48+00:00",
   "plantCount": 1023,
   "sourceRowCounts": {
     "dog": 985,
@@ -13,9 +13,27 @@
     "cat": "https://www.aspca.org/pet-care/animal-poison-control/cats-plant-list",
     "horse": "https://www.aspca.org/pet-care/animal-poison-control/horse-plant-list"
   },
+  "nameEnrichment": {
+    "chineseNameCount": 1023,
+    "professionalNameCount": 1023,
+    "pinyinCount": 1023,
+    "needsReviewCount": 223,
+    "sourceCounts": {
+      "reviewed": 24,
+      "wikidata": 680,
+      "gbif": 92,
+      "wikidataAcceptedTaxon": 32,
+      "translatedFallback": 195
+    },
+    "sources": {
+      "wikidata": "https://www.wikidata.org/",
+      "gbif": "https://www.gbif.org/"
+    }
+  },
   "notes": [
     "List-level factual fields only.",
     "No ASPCA images are stored.",
-    "Clinical prose is maintained separately as reviewed editorial content."
+    "Clinical prose is maintained separately as reviewed editorial content.",
+    "Automatically matched or translated names remain explicitly marked for professional review."
   ]
 }

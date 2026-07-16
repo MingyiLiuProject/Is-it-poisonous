@@ -8,6 +8,7 @@ struct PlantDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 header
+                namingOverview
                 toxicityOverview
                 if plant.toxicPrinciples.isEmpty && plant.clinicalSigns.isEmpty {
                     informationCard(
@@ -71,13 +72,58 @@ struct PlantDetailView: View {
                 Text(plant.englishName)
                     .font(.title3.weight(.medium))
                     .foregroundStyle(AppTheme.forest)
-                Text(plant.scientificName)
+                Text(plant.acceptedScientificName)
                     .font(.subheadline.italic())
                     .foregroundStyle(.secondary)
                 Text(plant.family)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
+                if plant.nameNeedsReview {
+                    Label("名称待专业复核", systemImage: "exclamationmark.circle")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppTheme.warning)
+                }
             }
+        }
+    }
+
+    private var namingOverview: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("名称", systemImage: "text.book.closed")
+                .font(.headline)
+                .foregroundStyle(AppTheme.forest)
+
+            nameLine(title: "中文俗名", value: plant.chineseName)
+            if !plant.chineseAliases.isEmpty {
+                nameLine(title: "中文别名", value: plant.chineseAliases.joined(separator: "、"))
+            }
+            nameLine(title: "英文俗名", value: plant.englishName)
+            nameLine(title: "专业学名", value: plant.acceptedScientificName, italic: true)
+            if !plant.scientificName.isEmpty &&
+                plant.scientificName != plant.acceptedScientificName {
+                nameLine(title: "ASPCA 记录名", value: plant.scientificName, italic: true)
+            }
+
+            if plant.nameNeedsReview {
+                Text("该中文名或学名由自动匹配/翻译补全，尚待植物学专业人员复核。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(16)
+        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    private func nameLine(title: String, value: String, italic: Bool = false) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 82, alignment: .leading)
+            Text(value)
+                .font(italic ? Font.subheadline.italic() : Font.subheadline)
+                .textSelection(.enabled)
+            Spacer(minLength: 0)
         }
     }
 

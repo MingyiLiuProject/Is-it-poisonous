@@ -33,7 +33,7 @@ struct ExploreView: View {
                             ContentUnavailableView(
                                 "没有找到植物",
                                 systemImage: "leaf",
-                                description: Text("试试英文名、学名或更短的关键词")
+                                description: Text("可尝试中文、英文、学名、拼音或更短的关键词")
                             )
                             .frame(minHeight: 260)
                         } else {
@@ -77,7 +77,7 @@ struct ExploreView: View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(AppTheme.moss)
-            TextField("搜索中文名、英文名或学名", text: $query)
+            TextField("搜索中文、英文、学名或拼音", text: $query)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
             if !query.isEmpty {

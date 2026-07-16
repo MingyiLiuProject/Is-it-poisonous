@@ -1,0 +1,55 @@
+{
+  "id:medicine-plant": {
+    "name": "芦荟",
+    "aliases": ["药用芦荟", "真芦荟"],
+    "acceptedScientificName": "Aloe vera"
+  },
+  "Aloe vera": {
+    "name": "芦荟",
+    "aliases": ["库拉索芦荟", "真芦荟"]
+  },
+  "Crassula ovata": {
+    "name": "玉树",
+    "aliases": ["燕子掌"]
+  },
+  "Cycas revoluta": {
+    "name": "苏铁",
+    "aliases": ["铁树", "凤尾蕉"]
+  },
+  "Dracaena trifasciata": {
+    "name": "虎尾兰",
+    "aliases": ["虎皮兰"]
+  },
+  "Epipremnum aureum": {
+    "name": "绿萝",
+    "aliases": ["黄金葛", "黄金藤"]
+  },
+  "Hydrangea arborescens": {
+    "name": "绣球花",
+    "aliases": ["八仙花"]
+  },
+  "Lilium": {
+    "name": "百合",
+    "aliases": ["真百合"]
+  },
+  "Monstera deliciosa": {
+    "name": "龟背竹",
+    "aliases": ["蓬莱蕉"]
+  },
+  "Nerium oleander": {
+    "name": "夹竹桃",
+    "aliases": []
+  },
+  "Rhododendron": {
+    "name": "杜鹃花",
+    "aliases": ["映山红"]
+  },
+  "Spathiphyllum": {
+    "name": "白鹤芋",
+    "aliases": ["白掌", "和平百合"]
+  },
+  "Tulipa": {
+    "name": "郁金香",
+    "aliases": []
+  }
+}

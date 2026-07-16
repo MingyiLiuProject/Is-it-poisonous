@@ -27,7 +27,7 @@ struct PlantRow: View {
                 Text(plant.englishName)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text(plant.scientificName)
+                Text(plant.acceptedScientificName)
                     .font(.caption.italic())
                     .foregroundStyle(.tertiary)
                     .lineLimit(1)
