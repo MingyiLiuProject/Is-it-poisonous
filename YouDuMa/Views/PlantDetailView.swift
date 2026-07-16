@@ -8,6 +8,7 @@ struct PlantDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 header
+                namingOverview
                 toxicityOverview
                 if plant.toxicPrinciples.isEmpty && plant.clinicalSigns.isEmpty {
                     informationCard(
@@ -49,21 +50,26 @@ struct PlantDetailView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top, spacing: 16) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [AppTheme.moss.opacity(0.38), AppTheme.warning.opacity(0.18)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                Image(systemName: "leaf.fill")
-                    .font(.system(size: 42))
-                    .foregroundStyle(AppTheme.forest)
+        VStack(alignment: .leading, spacing: 14) {
+            ZStack(alignment: .bottomTrailing) {
+                PlantRemoteImage(
+                    url: plant.image?.thumbnail,
+                    accessibilityLabel: "\(plant.chineseName)植物照片"
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 230)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+
+                if plant.image?.needsReview == true {
+                    Label("图片待复核", systemImage: "photo.badge.exclamationmark")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(.black.opacity(0.62), in: Capsule())
+                        .padding(12)
+                }
             }
-            .frame(width: 104, height: 104)
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(plant.chineseName)
@@ -71,13 +77,58 @@ struct PlantDetailView: View {
                 Text(plant.englishName)
                     .font(.title3.weight(.medium))
                     .foregroundStyle(AppTheme.forest)
-                Text(plant.scientificName)
+                Text(plant.acceptedScientificName)
                     .font(.subheadline.italic())
                     .foregroundStyle(.secondary)
                 Text(plant.family)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
+                if plant.nameNeedsReview {
+                    Label("名称待专业复核", systemImage: "exclamationmark.circle")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppTheme.warning)
+                }
             }
+        }
+    }
+
+    private var namingOverview: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("名称", systemImage: "text.book.closed")
+                .font(.headline)
+                .foregroundStyle(AppTheme.forest)
+
+            nameLine(title: "中文俗名", value: plant.chineseName)
+            if !plant.chineseAliases.isEmpty {
+                nameLine(title: "中文别名", value: plant.chineseAliases.joined(separator: "、"))
+            }
+            nameLine(title: "英文俗名", value: plant.englishName)
+            nameLine(title: "专业学名", value: plant.acceptedScientificName, italic: true)
+            if !plant.scientificName.isEmpty &&
+                plant.scientificName != plant.acceptedScientificName {
+                nameLine(title: "ASPCA 记录名", value: plant.scientificName, italic: true)
+            }
+
+            if plant.nameNeedsReview {
+                Text("该中文名或学名由自动匹配/翻译补全，尚待植物学专业人员复核。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(16)
+        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+
+    private func nameLine(title: String, value: String, italic: Bool = false) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 82, alignment: .leading)
+            Text(value)
+                .font(italic ? Font.subheadline.italic() : Font.subheadline)
+                .textSelection(.enabled)
+            Spacer(minLength: 0)
         }
     }
 
@@ -141,7 +192,7 @@ struct PlantDetailView: View {
     }
 
     private var source: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("资料来源")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -149,6 +200,34 @@ struct PlantDetailView: View {
                 Link(destination: url) {
                     Label("查看 ASPCA 原始资料", systemImage: "arrow.up.right.square")
                         .font(.subheadline.weight(.medium))
+                }
+            }
+            if let image = plant.image {
+                Divider()
+                Text("植物图片")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                if let sourcePage = image.sourcePage {
+                    Link(destination: sourcePage) {
+                        Label("查看 Wikimedia Commons 图片页面", systemImage: "photo")
+                            .font(.subheadline.weight(.medium))
+                    }
+                }
+                Text("作者：\(image.author)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let licensePage = image.licensePage {
+                    Link("许可：\(image.license)", destination: licensePage)
+                        .font(.caption)
+                } else {
+                    Text("许可：\(image.license)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if image.needsReview {
+                    Text("该图片通过学名或俗名搜索匹配，仍需人工确认是否为准确物种。")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.warning)
                 }
             }
             Text("本应用仅供风险筛查，不能替代兽医诊断。资料可能不完整，请以兽医意见为准。")

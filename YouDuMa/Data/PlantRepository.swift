@@ -15,6 +15,8 @@ enum PlantRepository {
         }
     }()
 
+    private static let searchIndex = plants.map(PlantSearchIndex.init)
+
     private static let reviewedPlants: [Plant] = [
         Plant(
             id: "lily",
@@ -189,11 +191,22 @@ enum PlantRepository {
     static func search(_ query: String, pet: PetType? = nil) -> [Plant] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        return plants.filter { plant in
-            let matchesPet = pet.map { plant.toxicTo.contains($0) } ?? true
-            let matchesQuery = trimmed.isEmpty || plant.searchableText.localizedCaseInsensitiveContains(trimmed)
-            return matchesPet && matchesQuery
+        return searchIndex.compactMap { entry -> (Plant, Int)? in
+            guard pet.map({ entry.plant.toxicTo.contains($0) }) ?? true else {
+                return nil
+            }
+            guard let score = entry.score(for: trimmed) else {
+                return nil
+            }
+            return (entry.plant, score)
         }
+        .sorted {
+            if $0.1 != $1.1 {
+                return $0.1 > $1.1
+            }
+            return $0.0.englishName.localizedCaseInsensitiveCompare($1.0.englishName) == .orderedAscending
+        }
+        .map(\.0)
     }
 }
 
@@ -202,15 +215,21 @@ private extension Plant {
         Plant(
             id: id,
             chineseName: chineseName,
+            chineseAliases: Array(Set(chineseAliases + importedPlant.chineseAliases)).sorted(),
             englishName: englishName,
             scientificName: scientificName,
+            acceptedScientificName: importedPlant.acceptedScientificName,
             family: family,
             aliases: Array(Set(aliases + importedPlant.aliases)).sorted(),
+            pinyin: importedPlant.pinyin,
+            nameSource: "reviewed",
+            nameNeedsReview: false,
             toxicTo: importedPlant.toxicTo,
             nonToxicTo: importedPlant.nonToxicTo,
             toxicPrinciples: toxicPrinciples,
             clinicalSigns: clinicalSigns,
-            sourceURL: importedPlant.sourceURL
+            sourceURL: importedPlant.sourceURL,
+            image: importedPlant.image
         )
     }
 }

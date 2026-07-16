@@ -6,11 +6,15 @@ on:
     branches:
       - main
       - "agent/**"
+      - "codex/**"
     paths:
       - ".github/workflows/ios-browser-preview.yml"
       - "YouDuMa/**"
       - "YouDuMaTests/**"
       - "project.yml"
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -47,16 +51,30 @@ jobs:
         run: |
           python3 - <<'PY'
           import json
+          import re
           from pathlib import Path
 
-          plants = json.loads(Path("YouDuMa/Resources/Data/aspca_plants_v1.json").read_text())
-          metadata = json.loads(Path("YouDuMa/Resources/Data/aspca_database_metadata.json").read_text())
+          plants = json.loads(Path("YouDuMa/Resources/Data/aspca_plants_v1.json").read_text(encoding="utf-8"))
+          metadata = json.loads(Path("YouDuMa/Resources/Data/aspca_database_metadata.json").read_text(encoding="utf-8"))
           assert len(plants) == metadata["plantCount"]
           assert len({plant["id"] for plant in plants}) == len(plants)
           assert all(
               not set(plant["toxicTo"]) & set(plant["nonToxicTo"])
               for plant in plants
           )
+          assert all(re.search(r"[\u3400-\u9fff]", plant["chineseName"]) for plant in plants)
+          assert all(plant["acceptedScientificName"] for plant in plants)
+          assert all(plant["pinyin"] for plant in plants)
+          assert sum(plant["nameNeedsReview"] for plant in plants) == metadata["nameEnrichment"]["needsReviewCount"]
+          assert all(plant["image"] for plant in plants)
+          assert all(plant["image"]["thumbnailURL"].startswith("https://") for plant in plants)
+          assert all(
+              plant["image"]["thumbnailURL"].lower().split("?")[0].endswith((".jpg", ".jpeg"))
+              for plant in plants
+          )
+          assert all(plant["image"]["author"] and plant["image"]["license"] for plant in plants)
+          assert sum(plant["image"]["needsReview"] for plant in plants) == metadata["imageEnrichment"]["needsReviewCount"]
+          assert metadata["imageEnrichment"]["imageCount"] == len(plants)
           assert len(plants) > 900
           print(f"Validated {len(plants)} catalog records")
           PY
