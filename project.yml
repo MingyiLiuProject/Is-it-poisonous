@@ -16,9 +16,9 @@ targets:
     sources:
       - path: YouDuMa
         excludes:
-          - Resources
-    resources:
-      - path: YouDuMa/Resources
+          - Resources/Data
+      - path: YouDuMa/Resources/Data
+        buildPhase: resources
     info:
       path: YouDuMa/Info.plist
       properties:
