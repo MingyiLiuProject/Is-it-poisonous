@@ -39,5 +39,17 @@ final class PlantSearchTests: XCTestCase {
         XCTAssertTrue(PlantRepository.plants.contains { $0.nonToxicTo.isEmpty == false })
         XCTAssertTrue(PlantRepository.plants.allSatisfy { !$0.chineseName.isEmpty })
         XCTAssertTrue(PlantRepository.plants.allSatisfy { !$0.acceptedScientificName.isEmpty })
+        XCTAssertTrue(PlantRepository.plants.allSatisfy { $0.image != nil })
+        XCTAssertTrue(
+            PlantRepository.plants.allSatisfy {
+                $0.image?.thumbnailURL.hasPrefix("https://") == true
+            }
+        )
+        XCTAssertTrue(
+            PlantRepository.plants.allSatisfy {
+                !($0.image?.author.isEmpty ?? true) &&
+                !($0.image?.license.isEmpty ?? true)
+            }
+        )
     }
 }

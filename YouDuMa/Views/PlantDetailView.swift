@@ -50,21 +50,26 @@ struct PlantDetailView: View {
     }
 
     private var header: some View {
-        HStack(alignment: .top, spacing: 16) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [AppTheme.moss.opacity(0.38), AppTheme.warning.opacity(0.18)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                Image(systemName: "leaf.fill")
-                    .font(.system(size: 42))
-                    .foregroundStyle(AppTheme.forest)
+        VStack(alignment: .leading, spacing: 14) {
+            ZStack(alignment: .bottomTrailing) {
+                PlantRemoteImage(
+                    url: plant.image?.thumbnail,
+                    accessibilityLabel: "\(plant.chineseName)植物照片"
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 230)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+
+                if plant.image?.needsReview == true {
+                    Label("图片待复核", systemImage: "photo.badge.exclamationmark")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(.black.opacity(0.62), in: Capsule())
+                        .padding(12)
+                }
             }
-            .frame(width: 104, height: 104)
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(plant.chineseName)
@@ -187,7 +192,7 @@ struct PlantDetailView: View {
     }
 
     private var source: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("资料来源")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -195,6 +200,34 @@ struct PlantDetailView: View {
                 Link(destination: url) {
                     Label("查看 ASPCA 原始资料", systemImage: "arrow.up.right.square")
                         .font(.subheadline.weight(.medium))
+                }
+            }
+            if let image = plant.image {
+                Divider()
+                Text("植物图片")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                if let sourcePage = image.sourcePage {
+                    Link(destination: sourcePage) {
+                        Label("查看 Wikimedia Commons 图片页面", systemImage: "photo")
+                            .font(.subheadline.weight(.medium))
+                    }
+                }
+                Text("作者：\(image.author)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if let licensePage = image.licensePage {
+                    Link("许可：\(image.license)", destination: licensePage)
+                        .font(.caption)
+                } else {
+                    Text("许可：\(image.license)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if image.needsReview {
+                    Text("该图片通过学名或俗名搜索匹配，仍需人工确认是否为准确物种。")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.warning)
                 }
             }
             Text("本应用仅供风险筛查，不能替代兽医诊断。资料可能不完整，请以兽医意见为准。")

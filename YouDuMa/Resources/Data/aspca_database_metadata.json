@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 2,
-  "datasetVersion": "aspca-v2-multilingual-2026-07-16",
-  "generatedAt": "2026-07-16T09:42:48+00:00",
+  "schemaVersion": 3,
+  "datasetVersion": "aspca-v3-images-2026-07-16",
+  "generatedAt": "2026-07-16T10:07:46+00:00",
   "plantCount": 1023,
   "sourceRowCounts": {
     "dog": 985,
@@ -34,6 +34,21 @@
     "List-level factual fields only.",
     "No ASPCA images are stored.",
     "Clinical prose is maintained separately as reviewed editorial content.",
-    "Automatically matched or translated names remain explicitly marked for professional review."
-  ]
+    "Automatically matched or translated names remain explicitly marked for professional review.",
+    "Plant images are loaded from Wikimedia Commons and retain author, license, and source-page attribution."
+  ],
+  "imageEnrichment": {
+    "imageCount": 1023,
+    "missingImageCount": 0,
+    "needsReviewCount": 181,
+    "sourceCounts": {
+      "commonsScientificNameSearch": 150,
+      "wikidataTaxonImage": 842,
+      "manualQueryOverride": 16,
+      "commonsCommonNameSearch": 15
+    },
+    "source": "https://commons.wikimedia.org/",
+    "thumbnailWidth": 500,
+    "licensePolicy": "CC0, Public Domain, CC BY, and CC BY-SA"
+  }
 }

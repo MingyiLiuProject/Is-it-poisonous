@@ -66,6 +66,15 @@ jobs:
           assert all(plant["acceptedScientificName"] for plant in plants)
           assert all(plant["pinyin"] for plant in plants)
           assert sum(plant["nameNeedsReview"] for plant in plants) == metadata["nameEnrichment"]["needsReviewCount"]
+          assert all(plant["image"] for plant in plants)
+          assert all(plant["image"]["thumbnailURL"].startswith("https://") for plant in plants)
+          assert all(
+              plant["image"]["thumbnailURL"].lower().split("?")[0].endswith((".jpg", ".jpeg"))
+              for plant in plants
+          )
+          assert all(plant["image"]["author"] and plant["image"]["license"] for plant in plants)
+          assert sum(plant["image"]["needsReview"] for plant in plants) == metadata["imageEnrichment"]["needsReviewCount"]
+          assert metadata["imageEnrichment"]["imageCount"] == len(plants)
           assert len(plants) > 900
           print(f"Validated {len(plants)} catalog records")
           PY

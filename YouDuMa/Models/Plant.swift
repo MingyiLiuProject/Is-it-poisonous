@@ -1,5 +1,30 @@
 import Foundation
 
+struct PlantImage: Codable, Hashable {
+    let thumbnailURL: String
+    let pageURL: String
+    let fileTitle: String
+    let author: String
+    let license: String
+    let licenseURL: String
+    let description: String
+    let source: String
+    let matchType: String
+    let needsReview: Bool
+
+    var thumbnail: URL? {
+        URL(string: thumbnailURL)
+    }
+
+    var sourcePage: URL? {
+        URL(string: pageURL)
+    }
+
+    var licensePage: URL? {
+        URL(string: licenseURL)
+    }
+}
+
 struct Plant: Identifiable, Codable, Hashable {
     let id: String
     let chineseName: String
@@ -17,6 +42,7 @@ struct Plant: Identifiable, Codable, Hashable {
     let toxicPrinciples: String
     let clinicalSigns: String
     let sourceURL: String
+    let image: PlantImage?
 
     init(
         id: String,
@@ -34,7 +60,8 @@ struct Plant: Identifiable, Codable, Hashable {
         nonToxicTo: Set<PetType> = [],
         toxicPrinciples: String,
         clinicalSigns: String,
-        sourceURL: String
+        sourceURL: String,
+        image: PlantImage? = nil
     ) {
         self.id = id
         self.chineseName = chineseName
@@ -52,6 +79,7 @@ struct Plant: Identifiable, Codable, Hashable {
         self.toxicPrinciples = toxicPrinciples
         self.clinicalSigns = clinicalSigns
         self.sourceURL = sourceURL
+        self.image = image
     }
 
     var searchTerms: [String] {

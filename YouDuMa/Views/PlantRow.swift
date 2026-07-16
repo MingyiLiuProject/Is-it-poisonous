@@ -5,20 +5,12 @@ struct PlantRow: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [AppTheme.moss.opacity(0.32), AppTheme.forest.opacity(0.13)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                Image(systemName: "leaf.fill")
-                    .font(.title2)
-                    .foregroundStyle(AppTheme.forest)
-            }
+            PlantRemoteImage(
+                url: plant.image?.thumbnail,
+                accessibilityLabel: "\(plant.chineseName)植物照片"
+            )
             .frame(width: 58, height: 58)
+            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(plant.chineseName)

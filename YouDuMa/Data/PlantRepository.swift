@@ -228,7 +228,8 @@ private extension Plant {
             nonToxicTo: importedPlant.nonToxicTo,
             toxicPrinciples: toxicPrinciples,
             clinicalSigns: clinicalSigns,
-            sourceURL: importedPlant.sourceURL
+            sourceURL: importedPlant.sourceURL,
+            image: importedPlant.image
         )
     }
 }
