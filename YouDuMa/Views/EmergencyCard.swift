@@ -6,25 +6,19 @@ struct EmergencyCard: View {
             Label("疑似误食？", systemImage: "cross.case.fill")
                 .font(.title3.bold())
 
-            Text("不要自行催吐。记录植物名称、摄入时间和大致数量，拍照并立即联系当地兽医。")
+            Text("立即让宠物远离植物，防止继续舔食。不要自行催吐、喂食或用药，尽快联系兽医或附近的急诊兽医院。")
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Link(destination: URL(string: "tel:145")!) {
-                Label("瑞士中毒急救 145", systemImage: "phone.fill")
+            Link(destination: URL(string: "https://maps.apple.com/?q=emergency%20veterinarian")!) {
+                Label("在地图中查找附近急诊兽医", systemImage: "map.fill")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
                     .background(Color.white, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
                     .foregroundStyle(AppTheme.danger)
             }
 
-            Link(destination: URL(string: "tel:+18884264435")!) {
-                Label("ASPCA +1 888 426 4435", systemImage: "phone")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-            }
-
-            Text("ASPCA 与瑞士动物中毒咨询均可能收费；危急情况优先联系就近急诊兽医。")
+            Text("如果出现呼吸或吞咽困难、抽搐、虚脱、意识异常或持续严重呕吐，不要等待，直接前往急诊兽医院。")
                 .font(.caption2)
                 .opacity(0.78)
         }
