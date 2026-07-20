@@ -18,5 +18,7 @@ struct RootView: View {
                     Label("应急", systemImage: "cross.case")
                 }
         }
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }

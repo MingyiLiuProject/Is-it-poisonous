@@ -47,6 +47,8 @@
 - UserDefaults 本地收藏
 - XCTest
 - XcodeGen 项目配置
+- 自适应浅色/深色主题、Dynamic Type 与减少动态效果支持
+- 基于弹簧的即时按压反馈、系统材质层与适度触觉反馈
 
 项目主要目录：
 

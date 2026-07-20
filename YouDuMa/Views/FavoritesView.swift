@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FavoritesView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var favorites: FavoritesStore
 
     private var plants: [Plant] {
@@ -10,7 +11,12 @@ struct FavoritesView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppTheme.cream.ignoresSafeArea()
+                LinearGradient(
+                    colors: [AppTheme.cream, AppTheme.moss.opacity(0.045)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
 
                 if plants.isEmpty {
                     ContentUnavailableView(
@@ -25,14 +31,24 @@ struct FavoritesView: View {
                                 NavigationLink(value: plant) {
                                     PlantRow(plant: plant)
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(PressableCardButtonStyle())
+                                .transition(
+                                    reduceMotion
+                                        ? .opacity
+                                        : .opacity.combined(with: .scale(scale: 0.97))
+                                )
                             }
                         }
                         .padding(18)
                     }
+                    .animation(
+                        AppMotion.responsive(reduceMotion: reduceMotion),
+                        value: plants.map(\.id)
+                    )
                 }
             }
             .navigationTitle("我的收藏")
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .navigationDestination(for: Plant.self) { plant in
                 PlantDetailView(plant: plant)
             }

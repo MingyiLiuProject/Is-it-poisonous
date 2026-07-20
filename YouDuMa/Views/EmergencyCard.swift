@@ -14,9 +14,14 @@ struct EmergencyCard: View {
                 Label("在地图中查找附近急诊兽医", systemImage: "map.fill")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color.white, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                    .background(AppTheme.elevated, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 13, style: .continuous)
+                            .stroke(AppTheme.hairline)
+                    }
                     .foregroundStyle(AppTheme.danger)
             }
+            .buttonStyle(PressableControlButtonStyle())
 
             Text("如果出现呼吸或吞咽困难、抽搐、虚脱、意识异常或持续严重呕吐，不要等待，直接前往急诊兽医院。")
                 .font(.caption2)
@@ -29,5 +34,6 @@ struct EmergencyCard: View {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(AppTheme.danger.opacity(0.18))
         }
+        .shadow(color: Color.black.opacity(0.045), radius: 12, y: 5)
     }
 }

@@ -73,6 +73,7 @@ private final class PlantImageLoader: ObservableObject {
 }
 
 struct PlantRemoteImage: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let url: URL?
     let accessibilityLabel: String
 
@@ -103,6 +104,10 @@ struct PlantRemoteImage: View {
         .clipped()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
+        .animation(
+            reduceMotion ? .easeOut(duration: 0.15) : .easeOut(duration: 0.24),
+            value: loader.image != nil
+        )
         .task(id: url) {
             await loader.load(url)
         }

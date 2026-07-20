@@ -67,8 +67,9 @@ struct SafetyView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)
                             .foregroundStyle(.white)
-                            .background(AppTheme.forest, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+                            .background(AppTheme.forestFill, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
                     }
+                    .buttonStyle(PressableControlButtonStyle())
 
                     VStack(alignment: .leading, spacing: 10) {
                         Text("急救信息来源")
@@ -81,7 +82,7 @@ struct SafetyView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(16)
-                    .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .appCard()
 
                     Text("数据说明")
                         .font(.headline)
@@ -94,8 +95,16 @@ struct SafetyView: View {
                 }
                 .padding(18)
             }
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(
+                LinearGradient(
+                    colors: [AppTheme.cream, AppTheme.moss.opacity(0.045)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
             .navigationTitle("应急与说明")
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
     }
 
@@ -109,7 +118,7 @@ struct SafetyView: View {
         VStack(alignment: .leading, spacing: 12) {
             Label(title, systemImage: systemImage)
                 .font(.headline)
-                .foregroundStyle(AppTheme.forest)
+                .foregroundStyle(accent)
 
             ForEach(items, id: \.self) { item in
                 HStack(alignment: .top, spacing: 10) {
@@ -122,6 +131,6 @@ struct SafetyView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .appCard()
     }
 }
