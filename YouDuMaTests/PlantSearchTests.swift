@@ -52,4 +52,28 @@ final class PlantSearchTests: XCTestCase {
             }
         )
     }
+
+    func testRecognitionMatcherUsesScientificNames() {
+        let result = PlantRecognitionMatcher.match(
+            observations: [
+                PlantRecognitionObservation(
+                    identifier: "Epipremnum aureum",
+                    confidence: 0.86
+                )
+            ]
+        )
+
+        XCTAssertTrue(result.candidates.contains { $0.plant.id == "devils-ivy" })
+        XCTAssertLessThanOrEqual(result.candidates.count, 3)
+    }
+
+    func testRecognitionMatcherIgnoresGenericPlantLabels() {
+        let result = PlantRecognitionMatcher.match(
+            observations: [
+                PlantRecognitionObservation(identifier: "plant, flower, leaf", confidence: 0.99)
+            ]
+        )
+
+        XCTAssertTrue(result.candidates.isEmpty)
+    }
 }
