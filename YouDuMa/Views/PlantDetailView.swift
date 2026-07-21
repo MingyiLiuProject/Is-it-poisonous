@@ -33,7 +33,7 @@ struct PlantDetailView: View {
                         text: plant.clinicalSigns
                     )
                 }
-                EmergencyCard()
+                EmergencyCard(plantName: plant.chineseName)
                 source
             }
             .padding(18)

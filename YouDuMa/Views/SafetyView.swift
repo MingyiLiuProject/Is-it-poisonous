@@ -8,19 +8,6 @@ struct SafetyView: View {
                     EmergencyCard()
 
                     section(
-                        title: "立即处理",
-                        systemImage: "figure.walk.motion",
-                        items: [
-                            "将宠物和其他动物带离植物，防止继续舔食或接触花粉、叶片与花瓶水",
-                            "在确保自身安全的情况下收起剩余植物；处理汁液后清洗双手",
-                            "拍摄植物整体、叶片、花和标签，保留少量样本供兽医识别",
-                            "记录接触时间、可能摄入的部位和最大数量，并尽快联系兽医"
-                        ],
-                        itemSystemImage: "checkmark.circle.fill",
-                        accent: AppTheme.moss
-                    )
-
-                    section(
                         title: "不要自行处理",
                         systemImage: "hand.raised.fill",
                         items: [
@@ -34,7 +21,7 @@ struct SafetyView: View {
                     )
 
                     section(
-                        title: "立即前往急诊的情况",
+                        title: "需要立即就医的信号",
                         systemImage: "exclamationmark.triangle.fill",
                         items: [
                             "呼吸困难、吞咽困难、喉头或面部肿胀",
@@ -61,18 +48,8 @@ struct SafetyView: View {
                         accent: AppTheme.forest
                     )
 
-                    Link(destination: URL(string: "https://maps.apple.com/?q=emergency%20veterinarian")!) {
-                        Label("在地图中查找附近急诊兽医", systemImage: "map.fill")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .foregroundStyle(.white)
-                            .background(AppTheme.forestFill, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
-                    }
-                    .buttonStyle(PressableControlButtonStyle())
-
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("急救信息来源")
+                        Text("行动信息来源")
                             .font(.headline)
                         Link("康奈尔大学兽医学院：中毒物质急救", destination: URL(string: "https://www.vet.cornell.edu/departments-centers-and-institutes/riney-canine-health-center/canine-health-information/first-aid-poisonous-substances")!)
                         Link("RSPCA：宠物急救与中毒症状", destination: URL(string: "https://www.rspca.org.uk/adviceandwelfare/pets/dogs/health/firstaid")!)
@@ -89,7 +66,7 @@ struct SafetyView: View {
                     Text("数据库 v3 收录 ASPCA 猫、狗、马列表中的植物分类与毒性状态；临床描述仍在分批专业审核。")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Text("数据库最近核对：2026-07-16 · 急救说明更新：2026-07-17")
+                    Text("数据库最近核对：2026-07-16 · 行动说明更新：2026-07-21")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
@@ -103,7 +80,7 @@ struct SafetyView: View {
                 )
                 .ignoresSafeArea()
             )
-            .navigationTitle("应急与说明")
+            .navigationTitle("接触后行动")
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
     }
