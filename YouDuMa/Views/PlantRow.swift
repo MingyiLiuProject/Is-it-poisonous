@@ -9,8 +9,12 @@ struct PlantRow: View {
                 url: plant.image?.thumbnail,
                 accessibilityLabel: "\(plant.chineseName)植物照片"
             )
-            .frame(width: 58, height: 58)
-            .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+            .frame(width: 64, height: 64)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.white.opacity(0.18))
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(plant.chineseName)
@@ -49,10 +53,7 @@ struct PlantRow: View {
             }
         }
         .padding(14)
-        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.white.opacity(0.8))
-        }
+        .contentShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .appCard()
     }
 }

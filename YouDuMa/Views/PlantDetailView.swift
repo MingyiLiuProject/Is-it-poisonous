@@ -1,8 +1,13 @@
 import SwiftUI
 
 struct PlantDetailView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var favorites: FavoritesStore
     let plant: Plant
+
+    private var isFavorite: Bool {
+        favorites.contains(plant)
+    }
 
     var body: some View {
         ScrollView {
@@ -14,7 +19,7 @@ struct PlantDetailView: View {
                     informationCard(
                         title: "详细资料",
                         systemImage: "doc.text.magnifyingglass",
-                        text: "数据库 v1 已收录毒性状态与植物分类信息。毒性成分和临床表现尚未完成中文专业审核，请通过页面底部的来源链接查看 ASPCA 详情。"
+                        text: "数据库 v3 已收录毒性状态与植物分类信息。毒性成分和临床表现尚未完成中文专业审核，请通过页面底部的来源链接查看 ASPCA 详情。"
                     )
                 } else {
                     informationCard(
@@ -28,23 +33,37 @@ struct PlantDetailView: View {
                         text: plant.clinicalSigns
                     )
                 }
-                EmergencyCard()
+                EmergencyCard(plantName: plant.chineseName)
                 source
             }
             .padding(18)
             .padding(.bottom, 24)
         }
-        .background(AppTheme.cream.ignoresSafeArea())
+        .background(
+            LinearGradient(
+                colors: [AppTheme.cream, AppTheme.moss.opacity(0.045)],
+                startPoint: .top,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        )
         .navigationTitle(plant.chineseName)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    favorites.toggle(plant)
+                    withAnimation(AppMotion.emphasized(reduceMotion: reduceMotion)) {
+                        favorites.toggle(plant)
+                    }
                 } label: {
-                    Image(systemName: favorites.contains(plant) ? "heart.fill" : "heart")
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .contentTransition(.symbolEffect(.replace))
+                        .foregroundStyle(isFavorite ? AppTheme.danger : AppTheme.forest)
                 }
-                .accessibilityLabel(favorites.contains(plant) ? "取消收藏" : "收藏")
+                .accessibilityLabel(isFavorite ? "取消收藏" : "收藏")
+                .buttonStyle(PressableControlButtonStyle())
+                .sensoryFeedback(.selection, trigger: isFavorite)
             }
         }
     }
@@ -59,21 +78,28 @@ struct PlantDetailView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 230)
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Color.white.opacity(0.16))
+                }
+                .shadow(color: Color.black.opacity(0.11), radius: 18, y: 9)
 
                 if plant.image?.needsReview == true {
                     Label("图片待复核", systemImage: "photo.badge.exclamationmark")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 7)
-                        .background(.black.opacity(0.62), in: Capsule())
+                        .background(.ultraThinMaterial, in: Capsule())
                         .padding(12)
                 }
             }
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(plant.chineseName)
-                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .font(.largeTitle.bold())
+                    .fontDesign(.rounded)
+                    .tracking(-0.4)
                 Text(plant.englishName)
                     .font(.title3.weight(.medium))
                     .foregroundStyle(AppTheme.forest)
@@ -116,19 +142,30 @@ struct PlantDetailView: View {
             }
         }
         .padding(16)
-        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .appCard()
     }
 
     private func nameLine(title: String, value: String, italic: Bool = false) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .frame(width: 82, alignment: .leading)
-            Text(value)
-                .font(italic ? Font.subheadline.italic() : Font.subheadline)
-                .textSelection(.enabled)
-            Spacer(minLength: 0)
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 82, alignment: .leading)
+                Text(value)
+                    .font(italic ? Font.subheadline.italic() : Font.subheadline)
+                    .textSelection(.enabled)
+                Spacer(minLength: 0)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Text(value)
+                    .font(italic ? Font.subheadline.italic() : Font.subheadline)
+                    .textSelection(.enabled)
+            }
         }
     }
 
@@ -152,9 +189,17 @@ struct PlantDetailView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
                     .background(
-                        plant.isToxic(to: pet) ? AppTheme.danger.opacity(0.09) : Color.secondary.opacity(0.06),
+                        plant.isToxic(to: pet) ? AppTheme.danger.opacity(0.10) : AppTheme.elevated,
                         in: RoundedRectangle(cornerRadius: 14, style: .continuous)
                     )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(
+                                plant.isToxic(to: pet)
+                                    ? AppTheme.danger.opacity(0.16)
+                                    : AppTheme.hairline
+                            )
+                    }
                 }
             }
 
@@ -163,7 +208,7 @@ struct PlantDetailView: View {
                 .foregroundStyle(.secondary)
         }
         .padding(16)
-        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .appCard()
     }
 
     private func statusTitle(for pet: PetType) -> String {
@@ -188,7 +233,7 @@ struct PlantDetailView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .appCard()
     }
 
     private var source: some View {
@@ -234,5 +279,8 @@ struct PlantDetailView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .appCard()
     }
 }

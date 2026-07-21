@@ -1,8 +1,11 @@
 import SwiftUI
 
 struct ExploreView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var query = ""
     @State private var selectedPet: PetType?
+    @FocusState private var isSearchFocused: Bool
 
     private var results: [Plant] {
         PlantRepository.search(query, pet: selectedPet)
@@ -11,10 +14,15 @@ struct ExploreView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AppTheme.cream.ignoresSafeArea()
+                LinearGradient(
+                    colors: [AppTheme.cream, AppTheme.moss.opacity(0.055)],
+                    startPoint: .top,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
 
                 ScrollView {
-                    LazyVStack(spacing: 14) {
+                    LazyVStack(spacing: 16) {
                         hero
                         searchField
                         petFilters
@@ -26,6 +34,11 @@ struct ExploreView: View {
                             Text("\(results.count) 种")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                                .contentTransition(reduceMotion ? .opacity : .numericText())
+                                .animation(
+                                    AppMotion.responsive(reduceMotion: reduceMotion),
+                                    value: results.count
+                                )
                         }
                         .padding(.top, 8)
 
@@ -41,7 +54,7 @@ struct ExploreView: View {
                                 NavigationLink(value: plant) {
                                     PlantRow(plant: plant)
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(PressableCardButtonStyle())
                             }
                         }
                     }
@@ -54,16 +67,22 @@ struct ExploreView: View {
             .navigationDestination(for: Plant.self) { plant in
                 PlantDetailView(plant: plant)
             }
+            .sensoryFeedback(
+                .selection,
+                trigger: selectedPet?.rawValue ?? "all"
+            )
         }
     }
 
     private var hero: some View {
         VStack(spacing: 8) {
             Text("🪴")
-                .font(.system(size: 52))
+                .font(.system(size: 48))
                 .accessibilityHidden(true)
             Text("有毒吗？")
-                .font(.system(size: 42, weight: .bold, design: .rounded))
+                .font(.largeTitle.bold())
+                .fontDesign(.rounded)
+                .tracking(-0.6)
                 .foregroundStyle(AppTheme.forest)
             Text("快速查看常见植物对宠物的潜在风险")
                 .font(.subheadline)
@@ -80,6 +99,8 @@ struct ExploreView: View {
             TextField("搜索中文、英文、学名或拼音", text: $query)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .submitLabel(.search)
+                .focused($isSearchFocused)
             if !query.isEmpty {
                 Button {
                     query = ""
@@ -88,12 +109,32 @@ struct ExploreView: View {
                         .foregroundStyle(.tertiary)
                 }
                 .accessibilityLabel("清除搜索")
+                .buttonStyle(PressableControlButtonStyle())
             }
         }
         .padding(.horizontal, 16)
         .frame(height: 54)
-        .background(AppTheme.paper, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
-        .shadow(color: AppTheme.forest.opacity(0.09), radius: 18, y: 8)
+        .background {
+            if reduceTransparency {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .fill(AppTheme.paper)
+            } else {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .fill(.regularMaterial)
+            }
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 17, style: .continuous)
+                .stroke(
+                    isSearchFocused ? AppTheme.moss.opacity(0.75) : AppTheme.hairline,
+                    lineWidth: isSearchFocused ? 1.5 : 1
+                )
+        }
+        .shadow(color: Color.black.opacity(isSearchFocused ? 0.10 : 0.055), radius: 18, y: 8)
+        .animation(
+            AppMotion.responsive(reduceMotion: reduceMotion),
+            value: isSearchFocused
+        )
     }
 
     private var petFilters: some View {
@@ -121,28 +162,33 @@ struct ExploreView: View {
     }
 }
 private struct FilterChip: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let title: String
     let emoji: String
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            withAnimation(AppMotion.responsive(reduceMotion: reduceMotion)) {
+                action()
+            }
+        } label: {
             HStack(spacing: 6) {
                 Text(emoji)
                 Text(title)
                     .font(.subheadline.weight(.medium))
             }
             .padding(.horizontal, 14)
-            .frame(height: 40)
+            .frame(minHeight: 44)
             .foregroundStyle(isSelected ? Color.white : AppTheme.forest)
-            .background(isSelected ? AppTheme.forest : AppTheme.paper, in: Capsule())
+            .background(isSelected ? AppTheme.forestFill : AppTheme.paper, in: Capsule())
             .overlay {
-                if !isSelected {
-                    Capsule().stroke(AppTheme.forest.opacity(0.12))
-                }
+                Capsule().stroke(isSelected ? Color.white.opacity(0.12) : AppTheme.hairline)
             }
+            .shadow(color: Color.black.opacity(isSelected ? 0.09 : 0.025), radius: 8, y: 4)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableControlButtonStyle())
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

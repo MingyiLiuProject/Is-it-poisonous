@@ -15,8 +15,10 @@ struct RootView: View {
 
             SafetyView()
                 .tabItem {
-                    Label("应急", systemImage: "cross.case")
+                    Label("行动", systemImage: "checklist")
                 }
         }
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }
