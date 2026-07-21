@@ -5,6 +5,10 @@ struct ExploreView: View {
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var query = ""
     @State private var selectedPet: PetType?
+    @State private var navigationPath = NavigationPath()
+    @State private var isRecognitionPresented = false
+    @State private var pendingRecognizedPlant: Plant?
+    @State private var pendingRecognitionQuery: String?
     @FocusState private var isSearchFocused: Bool
 
     private var results: [Plant] {
@@ -12,7 +16,7 @@ struct ExploreView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 LinearGradient(
                     colors: [AppTheme.cream, AppTheme.moss.opacity(0.055)],
@@ -71,6 +75,12 @@ struct ExploreView: View {
                 .selection,
                 trigger: selectedPet?.rawValue ?? "all"
             )
+            .sheet(isPresented: $isRecognitionPresented, onDismiss: finishRecognition) {
+                PlantRecognitionSheet(
+                    onSelect: { pendingRecognizedPlant = $0 },
+                    onUseSearch: { pendingRecognitionQuery = $0 }
+                )
+            }
         }
     }
 
@@ -111,6 +121,22 @@ struct ExploreView: View {
                 .accessibilityLabel("清除搜索")
                 .buttonStyle(PressableControlButtonStyle())
             }
+
+            Divider()
+                .frame(height: 24)
+
+            Button {
+                isSearchFocused = false
+                isRecognitionPresented = true
+            } label: {
+                Image(systemName: "camera.viewfinder")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(AppTheme.forest)
+                    .frame(width: 32, height: 44)
+            }
+            .buttonStyle(PressableControlButtonStyle())
+            .accessibilityLabel("拍照识别植物")
+            .accessibilityHint("打开相机或从相册选择植物照片")
         }
         .padding(.horizontal, 16)
         .frame(height: 54)
@@ -159,6 +185,20 @@ struct ExploreView: View {
             return "对\(selectedPet.title)有毒"
         }
         return query.isEmpty ? "常见植物" : "搜索结果"
+    }
+
+    private func finishRecognition() {
+        if let plant = pendingRecognizedPlant {
+            pendingRecognizedPlant = nil
+            navigationPath.append(plant)
+            return
+        }
+
+        if let recognitionQuery = pendingRecognitionQuery {
+            pendingRecognitionQuery = nil
+            query = recognitionQuery
+            isSearchFocused = true
+        }
     }
 }
 private struct FilterChip: View {

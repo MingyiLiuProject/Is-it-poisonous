@@ -23,6 +23,7 @@ targets:
       path: YouDuMa/Info.plist
       properties:
         CFBundleDisplayName: 有毒吗
+        NSCameraUsageDescription: 用于拍摄植物照片并在设备端识别可能的植物种类。
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
